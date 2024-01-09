@@ -1,0 +1,11 @@
+C:\Users\taim\Desktop\Other\Vs 2017\SoundEngine\SoundEngine\bin\Release\System.Audio.dll
+C:\Users\taim\Desktop\Other\Vs 2017\SoundEngine\SoundEngine\bin\Release\System.Audio.pdb
+C:\Users\taim\Desktop\Other\Vs 2017\SoundEngine\SoundEngine\obj\Release\System.Audio.csproj.CoreCompileInputs.cache
+C:\Users\taim\Desktop\Other\Vs 2017\SoundEngine\SoundEngine\obj\Release\System.Audio.dll
+C:\Users\taim\Desktop\Other\Vs 2017\SoundEngine\SoundEngine\obj\Release\System.Audio.pdb
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\bin\Release\System.Audio.dll
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\bin\Release\System.Audio.pdb
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\obj\Release\System.Audio.csprojAssemblyReference.cache
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\obj\Release\System.Audio.csproj.CoreCompileInputs.cache
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\obj\Release\System.Audio.dll
+C:\Users\taim\Desktop\Other\Vs 2017\System.Audio\System.Audio\obj\Release\System.Audio.pdb
