@@ -46,6 +46,8 @@ namespace System.Audio
                 Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Callback, IntPtr.Zero);
 
                 assignedAction = callback;
+
+                ClipsManager.LoadedClips.Add(this);
             }
             else
             {
@@ -86,6 +88,8 @@ namespace System.Audio
             {
                 Bass.BASS_StreamFree(id);
                 id = -1;
+
+                ClipsManager.LoadedClips.Remove(this);
             }
         }
 
@@ -98,6 +102,8 @@ namespace System.Audio
             {
                 id = Bass.BASS_StreamCreateFile(path, 0, 0, BASSFlag.BASS_DEFAULT);
                 Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Callback, IntPtr.Zero);
+
+                ClipsManager.LoadedClips.Add(this);
             }
         }
         
