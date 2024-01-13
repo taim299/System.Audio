@@ -2,17 +2,23 @@
 
 namespace System.Audio
 {
-    public class Clip
+    public sealed class Clip
     {
-        string path;
-        int id;
+        private Action assignedAction;
+        private EndAction endAction;
+        private string path;
+        private int id;
         
+        /// <summary>
+        /// Gets and sets the playback time (set can be a bit slow)
+        /// </summary>
         public double time
         {
             get => Bass.BASS_ChannelBytes2Seconds(id, Bass.BASS_ChannelGetPosition(id));
             set => Bass.BASS_ChannelSetPosition(id, value);
         }
 
+        //Gets and sets the volume of the playback
         public float volume
         {
             get
@@ -25,62 +31,92 @@ namespace System.Audio
             set => Bass.BASS_ChannelSetAttribute(id, BASSAttribute.BASS_ATTRIB_VOL, value);
         }
 
-        public bool disposed => id == -1;
+        public bool loaded => id != -1;
         
-        public Clip(string path, EndAction endAction = EndAction.Nothing)
+        public Clip(string path, EndAction endAction = EndAction.Nothing, Action callback = null)
         {
             if (File.Exists(path))
             {
                 this.path = path;
 
-                action = endAction;
+                this.endAction = endAction;
 
                 id = Bass.BASS_StreamCreateFile(path, 0, 0, BASSFlag.BASS_DEFAULT);
 
                 Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Callback, IntPtr.Zero);
+
+                assignedAction = callback;
             }
             else
             {
-                throw new Exception("File not found!");
+                throw new FileNotFoundException($"The file does not exist in the given path '{path}'");
             }
         }
         
+        /// <summary>
+        /// Plays or restarts the playback from the start
+        /// </summary>
         public void play()
         {
             Bass.BASS_ChannelPlay(id, true);
         }
 
+        /// <summary>
+        /// Stops the playback
+        /// </summary>
         public void stop()
         {
             Bass.BASS_ChannelStop(id);
         }
-
+        
+        /// <summary>
+        /// Resumes the playback from the current time
+        /// </summary>
         public void resume()
         {
             Bass.BASS_ChannelPlay(id, false);
         }
 
-        public void dispose()
+        /// <summary>
+        /// Unloads it from memory if loaded
+        /// </summary>
+        public void unload()
         {
-            if(!disposed)
+            if(loaded)
             {
                 Bass.BASS_StreamFree(id);
                 id = -1;
             }
         }
 
-        public void reuse()
+        /// <summary>
+        /// Reloads it to memory if not loaded
+        /// </summary>
+        public void reload()
         {
-            if (disposed)
+            if (!loaded)
             {
                 id = Bass.BASS_StreamCreateFile(path, 0, 0, BASSFlag.BASS_DEFAULT);
                 Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Callback, IntPtr.Zero);
             }
         }
-
-        public void addListener(Action action)
+        
+        /// <summary>
+        /// Changes the action to call when the playback ends, use null to remove it
+        /// </summary>
+        /// <param name="action">The action to call</param>
+        public void ChangeListener(Action action)
         {
-            OnFinish += action;
+            assignedAction = action;
+        }
+
+        /// <summary>
+        /// Changes the action to do when the playback ends
+        /// </summary>
+        /// <param name="endAction">The action to do</param>
+        public void ChangeEndAction(EndAction endAction)
+        {
+            this.endAction = endAction;
         }
 
         static Clip()
@@ -90,12 +126,12 @@ namespace System.Audio
 
         private void Callback(int handle, int channel, int idk, IntPtr user)
         {
-            OnFinish?.Invoke();
+            assignedAction?.Invoke();
 
-            switch (action)
+            switch (endAction)
             {
                 case EndAction.Dispose:
-                    dispose();
+                    unload();
                     break;
 
                 case EndAction.Loop:
@@ -103,10 +139,10 @@ namespace System.Audio
                     break;
             }
         }
-
-        EndAction action;
         
-        private event Action OnFinish = delegate{ };
+        /// <summary>
+        /// Actions to perform when the playback is over
+        /// </summary>
         public enum EndAction
         {
             Nothing,
