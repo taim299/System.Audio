@@ -4,6 +4,9 @@ namespace System.Audio
 {
     public sealed class Clip
     {
+        //fixes a problem where a delegate can be collected by GC when
+        //requested form the bass library so we need a referance to it
+        private readonly Bass.SYNCPROC Referance;
         private Action assignedAction;
         private EndAction endAction;
         private string path;
@@ -43,7 +46,9 @@ namespace System.Audio
 
                 id = Bass.BASS_StreamCreateFile(path, 0, 0, BASSFlag.BASS_DEFAULT);
 
-                Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Callback, IntPtr.Zero);
+                Referance = Callback;
+
+                Bass.BASS_ChannelSetSync(id, BASSSync.BASS_SYNC_END, 0, Referance, IntPtr.Zero);
 
                 assignedAction = callback;
 
